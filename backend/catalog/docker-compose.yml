@@ -1,0 +1,29 @@
+version: "3.9"
+networks:
+  traefik_proxy:
+    external: true
+  catalog_internal: { }
+
+services:
+  catalog-db:
+    image: postgres:16
+    container_name: catalog-db
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: catalog_db
+    networks: [catalog_internal]
+
+  catalog:
+    build: .
+    container_name: catalog
+    environment:
+      DATABASE_URL: postgresql+asyncpg://postgres:postgres@catalog-db:5432/catalog_db
+depends_on: [catalog-db]
+labels:
+          - traefik.enable=true
+          - traefik.http.routers.catalog.rule=PathPrefix(`/catalog`)
+          - traefik.http.services.catalog.loadbalancer.server.port=8000
+
+networks: [traefik_proxy, catalog_internal]
+restart: unless-stopped
+

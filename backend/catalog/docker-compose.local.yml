@@ -1,0 +1,26 @@
+version: "3.9"
+
+services:
+  catalog_db:
+    image: postgres:16
+    container_name: catalog_db_local
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "5436:5432"
+    volumes:
+      - catalog_db_data:/var/lib/postgresql/data
+
+  catalog:
+    build: .
+    container_name: catalog_service_local
+    depends_on:
+      - catalog_db
+    env_file: .env
+    ports:
+      - "8001:8000"
+    volumes:
+      - .:/app
+
+volumes:
+  catalog_db_data:

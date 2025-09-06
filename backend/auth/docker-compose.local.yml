@@ -1,0 +1,33 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:15
+    container_name: auth_db_local
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: auth
+    ports:
+      - "5435:5432"
+    volumes:
+      - auth_db_data:/var/lib/postgresql/data
+
+  auth:
+    build: .
+    container_name: auth_service_local
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgresql+asyncpg://postgres:postgres@db:5432/auth
+      AUTH_SECRET: dev-secret-change-me
+      ACCESS_MINUTES: 15
+      REFRESH_DAYS: 30
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+
+volumes:
+  auth_db_data:

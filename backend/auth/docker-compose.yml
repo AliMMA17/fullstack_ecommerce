@@ -1,0 +1,34 @@
+version: "3.9"
+networks:
+  traefik_proxy:
+    external: true
+  auth_internal: { }
+
+services:
+  auth-db:
+    image: postgres:16
+    container_name: auth-db
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: auth_db
+    networks: [auth_internal]
+
+  auth:
+    build: .
+    container_name: auth
+    environment:
+      DATABASE_URL: postgresql+asyncpg://postgres:postgres@auth-db:5432/auth_db
+          AUTH_SECRET: dev-secret-change-me
+
+depends_on: [auth-db]
+labels:
+          - traefik.enable=true
+          - traefik.http.routers.auth.rule=PathPrefix(`/auth`)
+          - traefik.http.services.auth.loadbalancer.server.port=8000
+          - traefik.http.middlewares.auth-forward.forwardauth.address=http://auth:8000/auth/verify
+          - traefik.http.middlewares.auth-forward.forwardauth.trustForwardHeader=true
+          - traefik.http.middlewares.auth-forward.forwardauth.authResponseHeaders=X-User-Id,X-User-Roles
+
+networks: [traefik_proxy, auth_internal]
+restart: unless-stopped
+
