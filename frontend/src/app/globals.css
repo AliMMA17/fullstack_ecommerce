@@ -1,25 +1,47 @@
 @import "tailwindcss";
 
-/* tokens */
+/* -------------------- Theme tokens (always light) -------------------- */
 :root {
+  color-scheme: light;
+  /* force light mode */
   --background: #ffffff;
   --foreground: #171717;
+
+  /* Brand */
+  --brand-from: #10b981;
+  /* emerald-500 */
+  --brand-to: #0ea5a5;
+  /* teal-500 */
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-/* base */
+/* -------------------- Base -------------------- */
 body {
   background: var(--background);
+  /* stays white */
   color: var(--foreground);
 }
 
-/* teal panel + shapes */
+/* -------------------- Page container (Amazon-like) -------------------- */
+.page-wrap {
+  max-width: 1440px;
+  /* widen to 1536/1600 if you prefer */
+  margin-inline: auto;
+  padding-inline: 1rem;
+}
+
+@media (min-width: 640px) {
+  .page-wrap {
+    padding-inline: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .page-wrap {
+    padding-inline: 2rem;
+  }
+}
+
+/* -------------------- Auth teal panel + shapes -------------------- */
 .bg-auth-teal {
   background:
     radial-gradient(1200px 600px at -10% 110%, rgba(255, 255, 255, .12), transparent 60%),
@@ -44,4 +66,84 @@ body {
   transform: rotate(35deg);
   background: rgba(255, 255, 255, .18);
   border-radius: 4px;
+}
+
+/* -------------------- Brand helpers -------------------- */
+.bg-brand-gradient {
+  background-image: linear-gradient(135deg, var(--brand-from), var(--brand-to));
+}
+
+/* Primary button */
+.btn-brand {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  padding: 0 1.5rem;
+  border: 0;
+  border-radius: 9999px;
+  color: #fff;
+  font-weight: 600;
+  letter-spacing: .02em;
+  background-image: linear-gradient(135deg, var(--brand-from), var(--brand-to));
+  box-shadow: 0 10px 25px rgba(16, 185, 129, .25);
+  transition: transform .06s ease, filter .15s ease, box-shadow .2s ease;
+}
+
+.btn-brand:hover {
+  filter: saturate(1.05) brightness(1.03);
+}
+
+.btn-brand:active {
+  transform: translateY(1px);
+}
+
+.btn-brand:focus-visible {
+  outline: 2px solid #10b981;
+  outline-offset: 2px;
+}
+
+/* Outline button */
+.btn-brand-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  padding: 0 1.5rem;
+  border-radius: 9999px;
+  border: 2px solid #059669;
+  color: #047857;
+  background: #fff;
+  transition: background-color .2s ease, transform .06s ease;
+}
+
+.btn-brand-outline:hover {
+  background: #ecfdf5;
+}
+
+/* emerald-50 */
+.btn-brand-outline:active {
+  transform: translateY(1px);
+}
+
+.btn-brand-outline:focus-visible {
+  outline: 2px solid #10b981;
+  outline-offset: 2px;
+}
+
+/* Pill badge */
+.badge-brand {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 9999px;
+  padding: .25rem .75rem;
+  /* ~py-1 px-3 */
+  font-size: .75rem;
+  line-height: 1;
+  color: #065f46;
+  /* deep emerald */
+  background: #ecfdf5;
+  /* emerald-50 */
+  border: 1px solid #a7f3d0;
+  /* emerald-200 */
 }
