@@ -1,33 +1,58 @@
 version: "3.9"
 
+name: auth-local
+
+networks:
+  mesh:
+    external: true
+  auth-internal: {}   # private network for auth <-> db only
+
 services:
   db:
     image: postgres:15
-    container_name: auth_db_local
+    # container_name: auth_db_local        # (optional) let Compose name it
     restart: unless-stopped
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: auth
     ports:
-      - "5435:5432"
+      - "5435:5432"                         # host access (psql/GUI)
     volumes:
       - auth_db_data:/var/lib/postgresql/data
+    networks:
+      - auth-internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d auth"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
 
   auth:
     build: .
-    container_name: auth_service_local
+    # container_name: auth_service_local   # (optional) avoid hardcoding
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     environment:
       DATABASE_URL: postgresql+asyncpg://postgres:postgres@db:5432/auth
       AUTH_SECRET: dev-secret-change-me
-      ACCESS_MINUTES: 15
-      REFRESH_DAYS: 30
+      ACCESS_MINUTES: "15"
+      REFRESH_DAYS: "30"
+    expose:
+      - "8000"                              # internal (mesh) port for peers + Nginx
     ports:
-      - "8000:8000"
+      - "8000:8000"                         # optional: host access http://localhost:8000
     volumes:
       - .:/app
+    networks:
+      - mesh
+      - auth-internal
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
 
 volumes:
   auth_db_data:

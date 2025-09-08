@@ -17,7 +17,7 @@ type Product = {
 };
 
 const CATALOG_BASE =
-  (process.env.NEXT_PUBLIC_CATALOG_URL ?? "http://localhost:8001").replace(/\/$/, "");
+  (process.env.NEXT_PUBLIC_CATALOG_URL ?? "http://localhost").replace(/\/$/, "");
 const MEDIA_BASE =
   (process.env.NEXT_PUBLIC_MEDIA_URL ?? "http://localhost:8003").replace(/\/$/, "");
 

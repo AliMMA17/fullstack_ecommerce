@@ -62,9 +62,11 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen grid place-items-center bg-slate-50">
-      <div className="relative w-full max-w-[1200px] h-[600px] px-6">
-        {/* Card */}
+  <div className="min-h-screen grid place-items-center bg-slate-50">
+    <div className="relative w-full max-w-[1200px] h-[600px] px-6">
+      {/* Animated border wrapper */}
+      <div className="animated-border rounded-2xl h-full">
+        {/* Card (unchanged content) */}
         <div className="relative isolate h-full rounded-2xl bg-white shadow-2xl overflow-hidden">
           {/* Forms */}
           <div className="absolute inset-0">
@@ -107,12 +109,14 @@ export default function LoginPage() {
 
             {/* Welcome Back (visible in signup mode) */}
             <div
-              className={`absolute inset-0 flex flex-col justify-center p-12 transition-transform duration-700 ease-in-out
+              className={`absolute inset-0 flex flex-col items-center justify-center p-12 transition-transform duration-700 ease-in-out
                           ${isSignIn ? "-translate-x-full" : "translate-x-0"}`}
             >
-              <h1 className="text-5xl font-extrabold leading-tight">Welcome Back!</h1>
-              <p className="mt-4 text-white/90 max-w-sm">
-                To keep connected with us please login with your personal info
+              <h1 className="text-5xl font-extrabold leading-tight text-center">
+                Welcome Back!
+              </h1>
+              <p className="mt-4 text-lg text-white/90 max-w-sm text-center">
+                Log in to continue shopping
               </p>
               <div className="mt-10">
                 <button
@@ -129,13 +133,13 @@ export default function LoginPage() {
 
             {/* Hello, Friend (visible in signin mode) */}
             <div
-              className={`absolute inset-0 flex flex-col items-end justify-center p-12 transition-transform duration-700 ease-in-out
+              className={`absolute inset-0 flex flex-col items-center justify-center p-12 transition-transform duration-700 ease-in-out
                           ${isSignIn ? "translate-x-0" : "translate-x-full"}`}
             >
-              <div className="text-right max-w-sm">
-                <h1 className="text-5xl font-extrabold leading-tight">Hello, Friend!</h1>
-                <p className="mt-4 text-white/90">
-                  Enter your personal details and start your journey with us
+              <div className="text-center max-w-sm">
+                <h1 className="text-5xl font-extrabold leading-tight">New here?</h1>
+                <p className="mt-4 text-lg text-white/90 max-w-sm text-center">
+                  Let’s get started with your account.
                 </p>
                 <div className="mt-10">
                   <button
@@ -153,10 +157,11 @@ export default function LoginPage() {
           </div>
           {/* /overlay */}
         </div>
-
-        {/* soft shadow below the card */}
-        <div className="absolute -bottom-6 left-6 right-6 h-6 rounded-full bg-black/5 blur-md" />
       </div>
+
+      {/* soft shadow below the card */}
+      <div className="absolute -bottom-6 left-6 right-6 h-6 rounded-full bg-black/5 blur-md" />
     </div>
-  );
+  </div>
+);
 }

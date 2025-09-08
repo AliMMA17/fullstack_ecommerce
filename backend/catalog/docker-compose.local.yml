@@ -1,26 +1,54 @@
 version: "3.9"
 
+name: catalog-local
+
+networks:
+  mesh:
+    external: true
+  catalog-internal: {}   # private network for catalog <-> db only
+
 services:
   catalog_db:
     image: postgres:16
-    container_name: catalog_db_local
+    # container_name: catalog_db_local
     restart: unless-stopped
     env_file: .env
     ports:
-      - "5436:5432"
+      - "5436:5432"                        # different from auth (no conflict)
     volumes:
       - catalog_db_data:/var/lib/postgresql/data
+    networks:
+      - catalog-internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-catalog}"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
 
   catalog:
     build: .
-    container_name: catalog_service_local
+    # container_name: catalog_service_local
     depends_on:
-      - catalog_db
+      catalog_db:
+        condition: service_healthy
     env_file: .env
+    environment:
+      # If your code needs to call auth directly (bypassing Nginx):
+      AUTH_BASE_URL: http://auth:8000
+    expose:
+      - "8000"                             # internal (mesh) port for peers + Nginx
     ports:
-      - "8001:8000"
+      - "8001:8000"                        # optional: host access http://localhost:8001
     volumes:
       - .:/app
+    networks:
+      - mesh
+      - catalog-internal
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
 
 volumes:
   catalog_db_data:
